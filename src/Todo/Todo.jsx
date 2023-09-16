@@ -1,10 +1,32 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 const Todo = () => {
 
   const [todo, setTodo] = useState('');
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState(() => {
+    const savedTodos = getFromLocalStorage();
+    return savedTodos || [];
+  });
+
   const [editId, setEditId] = useState(0);
+  
+  const getFromLocalStorage = () => {
+    const savedTodos = localStorage.getItem('todos');
+    return savedTodos ? JSON.parse(savedTodos) : [];
+  };
+
+  const saveToLocalStorage = (todos) => {
+    localStorage.setItem('todos', JSON.stringify(todos));
+  };
+
+  useEffect(() => {
+    const savedTodos = getFromLocalStorage();
+    setTodos(savedTodos);
+  }, []);
+
+  useEffect(() => {
+    saveToLocalStorage(todos);
+  }, [todos]);
   
   const handleSubmit = (e) => {
 
@@ -59,7 +81,9 @@ const Todo = () => {
 
         {todos.map((t)=>(
           
-        <div className='flex justify-between mx-8 py-1 border-[#CFFDE1] border-[1px] rounded-full bg-[#CFFDE1] text-teal-900 my-3'>
+        <div className='flex justify-between mx-8 py-1 border-[#CFFDE1] border-[1px] rounded-full bg-[#CFFDE1] text-teal-900 my-3'
+        key={t.id}
+        >
           <p className='px-4 font-semibold'>{t.todo}</p>
 
         <div>
